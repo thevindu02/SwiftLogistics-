@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../utils/app_theme.dart';
+import '../services/api_service.dart';
 import 'login_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -14,7 +15,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  final _driverIdController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _licenseNumberController = TextEditingController();
@@ -53,27 +53,46 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     });
 
     try {
-      // Here you would typically call your registration API
-      // For now, we'll simulate the registration process
-      await Future.delayed(const Duration(seconds: 2));
+      // Call the backend API through API Gateway
+      final result = await ApiService.registerDriver(
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
+        email: _emailController.text.trim(),
+        phone: _phoneController.text.trim(),
+        commercialLicenseNumber: _licenseNumberController.text.trim(),
+        password: _passwordController.text,
+      );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registration submitted! Please wait for approval.'),
-            backgroundColor: AppColors.success,
-          ),
-        );
+        if (result['success']) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                result['message'] ??
+                    'Registration submitted! Please wait for approval.',
+              ),
+              backgroundColor: AppColors.success,
+            ),
+          );
 
-        // Navigate back to login screen
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
+          // Navigate back to login screen
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        } else {
+          setState(() {
+            _errorMessage =
+                result['error'] ?? 'Registration failed. Please try again.';
+          });
+        }
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Registration failed. Please try again.';
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage =
+              'Registration failed. Please check your internet connection and try again.';
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -125,7 +144,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _driverIdController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
     _licenseNumberController.dispose();
@@ -338,25 +356,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return 'Please enter your CDL number';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-
-          TextFormField(
-            controller: _driverIdController,
-            decoration: const InputDecoration(
-              labelText: 'Preferred Driver ID',
-              prefixIcon: Icon(Icons.assignment_ind_outlined),
-              hintText: 'This will be your username',
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter a driver ID';
-              }
-              if (value.length < 4) {
-                return 'Driver ID must be at least 4 characters';
               }
               return null;
             },
