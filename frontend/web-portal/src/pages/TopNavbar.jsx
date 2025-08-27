@@ -118,6 +118,7 @@ export default function TopNavbar() {
             color="primary"
             fullWidth
             sx={{ borderRadius: '20px', fontWeight: '600', textTransform: 'none' }}
+            onClick={() => navigate('/register')}
           >
             Register
           </Button>
@@ -209,6 +210,7 @@ export default function TopNavbar() {
                     color: '#fff',
                   },
                 }}
+                onClick={() => navigate('/register')} 
               >
                 Register
               </Button>

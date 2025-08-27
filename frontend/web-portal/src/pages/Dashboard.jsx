@@ -1,38 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
-  CssBaseline,
-  AppBar,
-  Toolbar,
   Typography,
-  IconButton,
-  Avatar,
-  Menu,
-  MenuItem,
   Grid,
   Paper,
   Button,
   TextField,
   InputAdornment,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  IconButton,
   Badge,
   List,
   ListItem,
   ListItemText,
   Divider,
+  Avatar,
+  Menu,
+  MenuItem,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import LogoutIcon from '@mui/icons-material/Logout';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import { Search as SearchIcon, Logout as LogoutIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
-// Sample data - you will replace with API calls
 const stats = {
   totalOrders: 1450,
   pendingDeliveries: 120,
@@ -41,103 +28,85 @@ const stats = {
 };
 
 const recentOrders = [
-  { id: 'ORD1234', date: '2025-08-25', status: 'Pending', destination: 'Colombo', actions: 'View' },
-  { id: 'ORD1235', date: '2025-08-24', status: 'Delivered', destination: 'Kandy', actions: 'View' },
-  { id: 'ORD1236', date: '2025-08-24', status: 'Failed', destination: 'Galle', actions: 'View' },
-  { id: 'ORD1237', date: '2025-08-23', status: 'Pending', destination: 'Negombo', actions: 'View' },
-  { id: 'ORD1238', date: '2025-08-22', status: 'Delivered', destination: 'Kurunegala', actions: 'View' },
-];
-
-const navItems = [
-  { label: 'Dashboard', link: '#' },
-  { label: 'Orders', link: '#' },
-  { label: 'Tracking', link: '#' },
-  { label: 'Profile', link: '#' },
+  { id: 'ORD1234', date: '2025-08-25', status: 'Pending', destination: 'Colombo' },
+  { id: 'ORD1235', date: '2025-08-24', status: 'Delivered', destination: 'Kandy' },
+  { id: 'ORD1236', date: '2025-08-24', status: 'Failed', destination: 'Galle' },
+  { id: 'ORD1237', date: '2025-08-23', status: 'Pending', destination: 'Negombo' },
+  { id: 'ORD1238', date: '2025-08-22', status: 'Delivered', destination: 'Kurunegala' },
 ];
 
 export default function Dashboard() {
   const theme = useTheme();
-  // Anchor for user menu
+
+  // User menu
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const handleMenu = event => setAnchorEl(event.currentTarget);
+  const handleMenu = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  // Search state
+  // Track order input
   const [trackOrderId, setTrackOrderId] = useState('');
 
-  // Replace with API hooks and websocket hooks here
-  useEffect(() => {
-    // Connect to websocket for real-time updates here
-  }, []);
-
   return (
-    <Box sx={{ display: 'flex', height: '100vh', bgcolor: theme.palette.background.default }}>
-      <CssBaseline />
-      {/* AppBar */}
-      <AppBar position="fixed" color="primary" elevation={3} sx={{ zIndex: theme.zIndex.drawer + 1 }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <img src="/logo192.png" alt="SwiftLogistics" style={{ width: 40, marginRight: 10, borderRadius: 8 }} />
-            <Typography variant="h6" noWrap component="div">
-              SwiftLogistics
-            </Typography>
-          </Box>
+    <Box
+      sx={{
+        bgcolor: theme.palette.background.default,
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* Header */}
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          justifyContent: 'flex-end',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+        }}
+      >
+        <IconButton onClick={handleMenu} size="large" aria-label="user account menu">
+          <Avatar alt="User Name" src="/user-avatar.png" />
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
+          <MenuItem onClick={handleClose}>Profile</MenuItem>
+          <MenuItem onClick={handleClose}>
+            Logout <LogoutIcon fontSize="small" sx={{ ml: 1 }} />
+          </MenuItem>
+        </Menu>
+      </Box>
 
-          {/* Navigation Menu */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
-            {navItems.map(item => (
-              <Button key={item.label} sx={{ color: 'white', fontWeight: '600' }} href={item.link}>
-                {item.label}
-              </Button>
-            ))}
-          </Box>
-
-          {/* User Info */}
-          <Box>
-            <IconButton color="inherit" onClick={handleMenu} size="large">
-              <Avatar alt="User Name" src="/user-avatar.png" />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>
-                Logout <LogoutIcon fontSize="small" sx={{ ml: 1 }} />
-              </MenuItem>
-            </Menu>
-          </Box>
-        </Toolbar>
-      </AppBar>
-
-      {/* Main Content */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, overflowY: 'auto' }}>
-        <Typography variant="h5" gutterBottom>
-          Dashboard Overview
-        </Typography>
-
-        {/* Statistics Cards */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
+      {/* Main content container */}
+      <Box sx={{ flexGrow: 1, p: 3, maxWidth: 1200, mx: 'auto' }}>
+        {/* Stats cards */}
+        <Grid container spacing={3} mb={4}>
           {[
             { label: 'Total Orders', value: stats.totalOrders, color: theme.palette.primary.main },
-            { label: 'Pending Deliveries', value: stats.pendingDeliveries, color: theme.palette.primary.light },
-            { label: 'Completed Deliveries', value: stats.completedDeliveries, color: '#4caf50' /*green*/ },
-            { label: 'Failed Deliveries', value: stats.failedDeliveries, color: theme.palette.secondary.main },
-          ].map(stat => (
+            { label: 'Pending Deliveries', value: stats.pendingDeliveries, color: theme.palette.warning.main },
+            { label: 'Completed Deliveries', value: stats.completedDeliveries, color: '#4caf50' },
+            { label: 'Failed Deliveries', value: stats.failedDeliveries, color: theme.palette.error.main },
+          ].map((stat) => (
             <Grid item xs={12} sm={6} md={3} key={stat.label}>
               <Paper
-                elevation={3}
                 sx={{
-                  p: 2,
+                  p: 3,
                   borderRadius: 3,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
                 }}
+                elevation={3}
               >
-                <Typography variant="subtitle1" sx={{ color: stat.color, fontWeight: 700 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 700, color: stat.color }}>
                   {stat.label}
                 </Typography>
                 <Typography variant="h4" sx={{ mt: 1 }}>
@@ -148,28 +117,31 @@ export default function Dashboard() {
           ))}
         </Grid>
 
-        {/* Actions: Submit Order, Track Order */}
-        <Grid container spacing={2} sx={{ mb: 4 }} alignItems="center">
+        {/* Actions */}
+        <Grid container spacing={2} alignItems="center" mb={4}>
           <Grid item xs={12} sm={6} md={3}>
             <Button
               variant="contained"
-              color="primary"
               size="large"
               fullWidth
-              sx={{ borderRadius: 3, boxShadow: '0 4px 10px rgba(0, 27, 183, 0.3)' }}
+              sx={{
+                borderRadius: 3,
+                bgcolor: theme.palette.primary.main,
+                '&:hover': { bgcolor: theme.palette.primary.dark },
+              }}
               onClick={() => alert('Navigate to Submit Order')}
             >
               Submit New Order
             </Button>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={6} md={5}>
             <TextField
               fullWidth
               variant="outlined"
+              size="small"
               placeholder="Track Order by ID"
               value={trackOrderId}
-              onChange={e => setTrackOrderId(e.target.value)}
-              size="large"
+              onChange={(e) => setTrackOrderId(e.target.value)}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -183,33 +155,49 @@ export default function Dashboard() {
                   </InputAdornment>
                 ),
               }}
-              sx={{ borderRadius: 3, backgroundColor: 'white' }}
+              sx={{ bgcolor: 'background.paper', borderRadius: 1 }}
               inputProps={{ 'aria-label': 'track order' }}
             />
           </Grid>
         </Grid>
 
-        {/* Recent Orders Table */}
+        {/* Recent Orders */}
         <Typography variant="h6" sx={{ mb: 2 }}>
           Recent Orders
         </Typography>
-        <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {['Order ID', 'Date', 'Status', 'Destination', 'Actions'].map(head => (
-                  <TableCell key={head} sx={{ fontWeight: '700' }}>
+        <Paper sx={{ borderRadius: 3, overflowX: 'auto', mb: 5 }}>
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              minWidth: 600,
+            }}
+            aria-label="Recent Orders"
+          >
+            <thead>
+              <tr style={{ borderBottom: `2px solid ${theme.palette.divider}` }}>
+                {['Order ID', 'Date', 'Status', 'Destination'].map((head) => (
+                  <th
+                    key={head}
+                    style={{
+                      textAlign: 'left',
+                      padding: '14px 16px',
+                      fontWeight: 700,
+                      color: theme.palette.text.primary,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     {head}
-                  </TableCell>
+                  </th>
                 ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {recentOrders.map(order => (
-                <TableRow key={order.id} hover>
-                  <TableCell>{order.id}</TableCell>
-                  <TableCell>{order.date}</TableCell>
-                  <TableCell>
+              </tr>
+            </thead>
+            <tbody>
+              {recentOrders.map((order) => (
+                <tr key={order.id} style={{ borderBottom: `1px solid ${theme.palette.divider}` }}>
+                  <td style={{ padding: '12px 16px' }}>{order.id}</td>
+                  <td style={{ padding: '12px 16px' }}>{order.date}</td>
+                  <td style={{ padding: '12px 16px' }}>
                     <Badge
                       badgeContent={order.status}
                       color={
@@ -219,60 +207,46 @@ export default function Dashboard() {
                           ? 'error'
                           : 'warning'
                       }
+                      sx={{
+                        '& .MuiBadge-badge': {
+                          textTransform: 'capitalize',
+                          width: 'auto',
+                          padding: '0 8px',
+                          borderRadius: 10,
+                          fontSize: 12,
+                          height: 22,
+                        },
+                      }}
                     />
-                  </TableCell>
-                  <TableCell>{order.destination}</TableCell>
-                  <TableCell>
-                    <Button size="small" variant="outlined" onClick={() => alert(`Viewing ${order.id}`)}>
-                      View
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                  <td style={{ padding: '12px 16px' }}>{order.destination}</td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            </tbody>
+          </table>
+        </Paper>
 
-        {/* Real-time Notifications Panel */}
-        <Box sx={{ mt: 5 }}>
-          <Typography variant="h6" gutterBottom>
-            Real-time Notifications
-          </Typography>
-          <Paper
-            sx={{
-              height: 200,
-              overflowY: 'auto',
-              p: 2,
-              borderRadius: 3,
-              backgroundColor: 'white',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            }}
-          >
-            <List>
-              <ListItem>
-                <ListItemText
-                  primary="Order ORD1234 has been shipped."
-                  secondary="2 minutes ago"
-                />
-              </ListItem>
-              <Divider />
-              <ListItem>
-                <ListItemText
-                  primary="Route update: New high-priority delivery added to your route."
-                  secondary="10 minutes ago"
-                />
-              </ListItem>
-              <Divider />
-              <ListItem>
-                <ListItemText
-                  primary="System maintenance planned for Sept 1, 2025."
-                  secondary="1 day ago"
-                />
-              </ListItem>
-            </List>
-          </Paper>
-        </Box>
+        {/* Real-time Notifications */}
+        <Typography variant="h6" gutterBottom>
+          Real-time Notifications
+        </Typography>
+        <Paper sx={{ p: 2, borderRadius: 3, maxHeight: 200, overflowY: 'auto' }}>
+          <List>
+            <ListItem>
+              <ListItemText primary="Order ORD1234 has been shipped." secondary="2 minutes ago" />
+            </ListItem>
+            <Divider component="li" />
+            <ListItem>
+              <ListItemText primary="Route update: New high-priority delivery added." secondary="10 minutes ago" />
+            </ListItem>
+            <Divider component="li" />
+            <ListItem>
+              <ListItemText primary="System maintenance planned for Sept 1, 2025." secondary="1 day ago" />
+            </ListItem>
+          </List>
+        </Paper>
       </Box>
     </Box>
   );
 }
+

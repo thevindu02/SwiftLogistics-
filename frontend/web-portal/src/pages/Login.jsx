@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Button, Checkbox, FormControlLabel, TextField, Typography, Alert, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -11,10 +12,10 @@ const COLORS = {
 };
 
 export default function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [form, setForm] = useState({ username: '', password: '', remember: false });
 
   const handleChange = e => {
@@ -25,25 +26,28 @@ export default function Login() {
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    setSuccess('');
     setLoading(true);
-    // Simple validation
+
+    // Basic validation
     if (!form.username || !form.password) {
       setError('Please enter both username and password.');
       setLoading(false);
       return;
     }
+
     try {
       // Simulate API call
-      await new Promise(res => setTimeout(res, 1500));
-      // Replace with real API call
-      // const res = await fetch('/api/login', ...)
-      // if (res.ok) { ... }
-      localStorage.setItem('token', 'demo-jwt-token');
-      setSuccess('Login successful! Redirecting...');
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 1200);
+      await new Promise(res => setTimeout(res, 1000));
+
+      // Store token (replace with real API response)
+      if (form.remember) {
+        localStorage.setItem('token', 'demo-jwt-token');
+      } else {
+        sessionStorage.setItem('token', 'demo-jwt-token');
+      }
+
+      // Navigate to dashboard immediately
+      navigate('/dashboard');
     } catch (err) {
       setError('Authentication failed.');
     } finally {
@@ -72,6 +76,7 @@ export default function Login() {
           Client Portal
         </Typography>
       </Box>
+
       {/* Form Card */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -91,7 +96,7 @@ export default function Login() {
           }}
         >
           {error && <Alert severity="error">{error}</Alert>}
-          {success && <Alert severity="success">{success}</Alert>}
+
           <form onSubmit={handleSubmit} autoComplete="off">
             <TextField
               label="Email or Username"
@@ -103,6 +108,7 @@ export default function Login() {
               variant="outlined"
               sx={{ mb: 2, borderRadius: 2 }}
             />
+
             <Box sx={{ position: 'relative', mb: 2 }}>
               <TextField
                 label="Password"
@@ -116,18 +122,34 @@ export default function Login() {
                 sx={{ borderRadius: 2 }}
               />
               <Box
-                sx={{ position: 'absolute', top: '50%', right: 12, transform: 'translateY(-50%)', cursor: 'pointer', color: COLORS.blue }}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  right: 12,
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer',
+                  color: COLORS.blue,
+                }}
                 onClick={() => setShowPassword(v => !v)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </Box>
             </Box>
+
             <FormControlLabel
-              control={<Checkbox name="remember" checked={form.remember} onChange={handleChange} sx={{ color: COLORS.darkBlue }} />}
+              control={
+                <Checkbox
+                  name="remember"
+                  checked={form.remember}
+                  onChange={handleChange}
+                  sx={{ color: COLORS.darkBlue }}
+                />
+              }
               label={<Typography fontSize={14} color={COLORS.darkBlue}>Remember Me</Typography>}
               sx={{ mb: 2 }}
             />
+
             <Button
               type="submit"
               variant="contained"
@@ -153,6 +175,7 @@ export default function Login() {
               {loading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
+
           {/* Footer Links */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
             <Button href="#" sx={{ color: COLORS.blue, textTransform: 'none', fontSize: 14 }}>
