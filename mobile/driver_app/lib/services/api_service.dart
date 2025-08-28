@@ -28,8 +28,9 @@ class ApiService {
         'password': password,
       };
 
-      print('🚀 Sending request to: $url');
-      print('📦 Request body: ${jsonEncode(requestBody)}');
+      // TODO: Replace with proper logging in production
+      // print('🚀 Sending request to: $url');
+      // print('📦 Request body: ${jsonEncode(requestBody)}');
 
       final response = await http
           .post(
@@ -49,8 +50,9 @@ class ApiService {
             },
           );
 
-      print('📊 Response status: ${response.statusCode}');
-      print('📄 Response body: ${response.body}');
+      // TODO: Replace with proper logging in production
+      // print('📊 Response status: ${response.statusCode}');
+      // print('📄 Response body: ${response.body}');
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -64,16 +66,19 @@ class ApiService {
           throw Exception('Registration failed: ${response.body}');
         }
       }
-    } on http.ClientException catch (e) {
-      print('❌ HTTP Client Error: $e');
+    } on http.ClientException {
+      // TODO: Replace with proper logging in production
+      // print('❌ HTTP Client Error: $e');
       throw Exception(
         'Connection failed - Please check if backend services are running on the correct ports',
       );
-    } on FormatException catch (e) {
-      print('❌ JSON Format Error: $e');
+    } on FormatException {
+      // TODO: Replace with proper logging in production
+      // print('❌ JSON Format Error: $e');
       throw Exception('Invalid response format from server');
     } catch (e) {
-      print('❌ API Error: $e');
+      // TODO: Replace with proper logging in production
+      // print('❌ API Error: $e');
       throw Exception('Network error: $e');
     }
   }

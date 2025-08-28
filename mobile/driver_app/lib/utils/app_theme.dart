@@ -27,25 +27,12 @@ class AppColors {
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
-      primarySwatch: MaterialColor(AppColors.primaryBlue.value, <int, Color>{
-        50: AppColors.primaryBlue.withOpacity(0.1),
-        100: AppColors.primaryBlue.withOpacity(0.2),
-        200: AppColors.primaryBlue.withOpacity(0.3),
-        300: AppColors.primaryBlue.withOpacity(0.4),
-        400: AppColors.primaryBlue.withOpacity(0.5),
-        500: AppColors.primaryBlue,
-        600: AppColors.primaryBlue.withOpacity(0.7),
-        700: AppColors.primaryBlue.withOpacity(0.8),
-        800: AppColors.primaryBlue.withOpacity(0.9),
-        900: AppColors.primaryBlue,
-      }),
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primaryBlue,
         brightness: Brightness.light,
         primary: AppColors.primaryBlue,
         secondary: AppColors.accentOrange,
         surface: AppColors.surface,
-        background: AppColors.background,
         error: AppColors.error,
       ),
       scaffoldBackgroundColor: AppColors.background,

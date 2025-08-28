@@ -1,10 +1,10 @@
-package com.example.mock_wms;
+package com.swiftlogistics.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MockWmsApplicationTests {
+class UserServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

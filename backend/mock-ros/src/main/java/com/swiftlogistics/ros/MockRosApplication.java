@@ -1,4 +1,4 @@
-package com.example.mock_ros;
+package com.swiftlogistics.ros;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

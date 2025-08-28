@@ -1,4 +1,4 @@
-package com.example.mock_wms;
+package com.swiftlogistics.wms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
