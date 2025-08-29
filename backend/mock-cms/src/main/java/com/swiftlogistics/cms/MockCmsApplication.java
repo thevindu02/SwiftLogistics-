@@ -1,4 +1,4 @@
-package com.example.mock_cms;
+package com.swiftlogistics.cms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

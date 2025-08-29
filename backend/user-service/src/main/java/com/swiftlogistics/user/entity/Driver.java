@@ -40,7 +40,7 @@ public class Driver {
     
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
-    private DriverStatus status = DriverStatus.PENDING;
+    private DriverStatus status = DriverStatus.pending;
     
     @CreationTimestamp
     @Column(name = "created_at")
@@ -51,6 +51,6 @@ public class Driver {
     private LocalDateTime updatedAt;
     
     public enum DriverStatus {
-        PENDING, APPROVED, SUSPENDED, INACTIVE
+        pending, approved, suspended, inactive
     }
 }

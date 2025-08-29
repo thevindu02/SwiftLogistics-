@@ -51,7 +51,7 @@ public class DriverService {
         driver.setPasswordHash(hashedPassword);
         
         // Set default status as pending
-        driver.setStatus(Driver.DriverStatus.PENDING);
+        driver.setStatus(Driver.DriverStatus.pending);
         
         // Save driver to database
         Driver savedDriver = driverRepository.save(driver);
