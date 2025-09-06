@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -46,6 +47,9 @@ export default function Dashboard() {
 
   // Track order input
   const [trackOrderId, setTrackOrderId] = useState('');
+
+  // Navigation
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -129,7 +133,7 @@ export default function Dashboard() {
                 bgcolor: theme.palette.primary.main,
                 '&:hover': { bgcolor: theme.palette.primary.dark },
               }}
-              onClick={() => alert('Navigate to Submit Order')}
+              onClick={() => navigate('/submit-order')}
             >
               Submit New Order
             </Button>

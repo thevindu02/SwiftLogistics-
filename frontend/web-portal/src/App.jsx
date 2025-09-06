@@ -8,6 +8,7 @@ import TopNavbar from './pages/TopNavbar.jsx';
 import Footer from './pages/Footer.jsx';
 import Register from './pages/Register.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import SubmitOrder from './pages/SubmitOrder.jsx';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/submit-order" element={<SubmitOrder />} />
       </Routes>
       <Footer />
     </BrowserRouter>
