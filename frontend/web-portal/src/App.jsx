@@ -8,16 +8,18 @@ import TopNavbar from './pages/TopNavbar.jsx';
 import Footer from './pages/Footer.jsx';
 import Register from './pages/Register.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Orders from './pages/Orders.jsx';
 
 function App() {
   return (
     <BrowserRouter>
       <TopNavbar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/" element={<Home />} />
+  <Route path="/login" element={<Login />} />
+  <Route path="/register" element={<Register />} />
+  <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/orders" element={<Orders />} />
       </Routes>
       <Footer />
     </BrowserRouter>

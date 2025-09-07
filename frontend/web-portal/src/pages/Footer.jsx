@@ -52,12 +52,12 @@ export default function Footer() {
                 mb: 1,
                 cursor: 'default',
                 userSelect: 'none',
-                '& span': { color: COLORS.orange },
                 fontSize: { xs: '1.5rem', md: '1.75rem' },
                 textAlign: { xs: 'center', md: 'left' },
               }}
             >
-              <span>Swift</span>Track
+              <span style={{ color: COLORS.orange }}>Swift</span>
+              <span style={{ color: '#fff' }}>Logistics</span>
             </Typography>
             <Typography variant="body2" sx={{ maxWidth: 300, color: COLORS.lightGrey, mx: { xs: 'auto', md: 0 }, textAlign: { xs: 'center', md: 'left' } }}>
               Reliable last-mile delivery with transparent tracking.
