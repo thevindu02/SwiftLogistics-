@@ -1,13 +1,11 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Button, Chip, MenuItem, Select, InputLabel, FormControl, OutlinedInput, Typography, CircularProgress } from '@mui/material';
-import { DatePicker, Table, Pagination, Input as AntdInput } from 'antd';
-import { motion } from 'framer-motion';
+import { Box, Button, Chip, MenuItem, Select, InputLabel, FormControl, OutlinedInput, Typography, CircularProgress, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, TextField, Pagination } from '@mui/material';
 import { MdSearch, MdFileDownload, MdRemoveRedEye, MdCancel, MdTrackChanges } from 'react-icons/md';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '@fontsource/poppins/400.css';
 import '@fontsource/poppins/700.css';
-import 'antd/dist/reset.css';
 
 const statusColors = {
   Pending: 'warning',
@@ -39,7 +37,7 @@ const sectionFade = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const OrderList = () => {
+const OrderList = ({ onSidebarOpen }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -47,9 +45,9 @@ const OrderList = () => {
   const [total, setTotal] = useState(0);
   const [status, setStatus] = useState('All');
   const [search, setSearch] = useState('');
-  const [dateRange, setDateRange] = useState([]);
+  const [dateStart, setDateStart] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
 
-  // Simulate API fetch
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
@@ -60,82 +58,38 @@ const OrderList = () => {
           o => o.orderId.toLowerCase().includes(search.toLowerCase()) ||
             o.recipient.toLowerCase().includes(search.toLowerCase())
         );
-      if (dateRange.length === 2 && dateRange[0] && dateRange[1]) {
-        const [start, end] = dateRange;
+      if (dateStart && dateEnd) {
+        const start = new Date(dateStart);
+        const end = new Date(dateEnd);
         filtered = filtered.filter(o => {
           const d = new Date(o.orderDate);
-          return d >= start.toDate() && d <= end.toDate();
+          return d >= start && d <= end;
         });
       }
       setTotal(filtered.length);
       setOrders(filtered.slice((page - 1) * pageSize, page * pageSize));
       setLoading(false);
     }, 500);
-  }, [status, search, dateRange, page, pageSize]);
-
-  // Placeholder for WebSocket real-time updates
-  useEffect(() => {
-    // Simulate real-time update
-    // setInterval(() => { ... }, 10000);
-  }, []);
+  }, [status, search, dateStart, dateEnd, page, pageSize]);
 
   const handleExport = () => {
     toast.success('Exported to CSV! (placeholder)');
   };
 
-  const columns = useMemo(() => [
-    {
-      title: 'Order ID',
-      dataIndex: 'orderId',
-      render: (id) => (
-        <Button
-          variant="text"
-          color="primary"
-          sx={{ textTransform: 'none', fontWeight: 700, color: '#001BB7' }}
-          onClick={() => toast.info(`Navigate to details for ${id}`)}
-        >
-          {id}
-        </Button>
-      ),
-    },
-    { title: 'Order Date', dataIndex: 'orderDate' },
-    { title: 'Recipient Name', dataIndex: 'recipient' },
-    { title: 'Destination Address', dataIndex: 'address' },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      render: (status) => (
-        <Chip
-          label={status}
-          color={statusColors[status] || 'default'}
-          sx={{ borderRadius: 2, fontWeight: 600, fontSize: 14 }}
-        />
-      ),
-    },
-    { title: 'Estimated Delivery', dataIndex: 'estimated' },
-    {
-      title: 'Actions',
-      dataIndex: 'actions',
-      render: (_, record) => (
-        <Box className="flex gap-2">
-          <Button size="small" color="primary" variant="outlined" startIcon={<MdRemoveRedEye />} onClick={() => toast.info('View details')}>View</Button>
-          <Button size="small" color="info" variant="outlined" startIcon={<MdTrackChanges />} onClick={() => toast.info('Track order')}>Track</Button>
-          {record.status === 'Pending' && (
-            <Button size="small" color="error" variant="outlined" startIcon={<MdCancel />} onClick={() => toast.warn('Cancel order (placeholder)')}>Cancel</Button>
-          )}
-        </Box>
-      ),
-    },
-  ], []);
-
   return (
     <Box className="min-h-screen bg-[#E9E9E9] flex flex-col items-center py-6 px-2" style={{ fontFamily: 'Poppins, Nunito, Lato, sans-serif' }}>
       <ToastContainer position="top-center" autoClose={2000} />
-      <motion.div initial="hidden" animate="visible" variants={sectionFade} className="w-full max-w-6xl">
-        <Box className="rounded-2xl p-6 shadow-lg bg-white mb-6">
-          <Typography variant="h4" className="mb-6 font-bold text-[#001BB7]" style={{ fontFamily: 'Poppins, Nunito, Lato, sans-serif', fontSize: '2.2rem' }}>
+      <Box className="w-full max-w-6xl">
+        {/* Header with sidebar open button */}
+        <Box className="flex items-center mb-4">
+          <Button onClick={onSidebarOpen} variant="outlined" sx={{ mr: 2, borderRadius: 2 }}>
+            <span style={{ fontSize: 22, marginRight: 6 }}>☰</span> Menu
+          </Button>
+          <Typography variant="h4" className="font-bold text-[#001BB7]" style={{ fontFamily: 'Poppins, Nunito, Lato, sans-serif', fontSize: '2.2rem' }}>
             My Orders
           </Typography>
+        </Box>
+        <Box className="rounded-2xl p-6 shadow-lg bg-white mb-6">
           <Box className="flex flex-col md:flex-row md:items-end gap-4 mb-4">
             <FormControl sx={{ minWidth: 180 }} size="small">
               <InputLabel>Status</InputLabel>
@@ -151,20 +105,31 @@ const OrderList = () => {
                 ))}
               </Select>
             </FormControl>
-            <DatePicker.RangePicker
-              className="rounded-lg border border-gray-200"
-              onChange={setDateRange}
-              style={{ minWidth: 220, height: 40 }}
-              allowClear
+            <TextField
+              label="Start Date"
+              type="date"
+              size="small"
+              value={dateStart}
+              onChange={e => { setDateStart(e.target.value); setPage(1); }}
+              InputLabelProps={{ shrink: true }}
+              sx={{ minWidth: 150, borderRadius: 2 }}
             />
-            <AntdInput
-              prefix={<MdSearch />}
-              placeholder="Search Order ID or Recipient"
+            <TextField
+              label="End Date"
+              type="date"
+              size="small"
+              value={dateEnd}
+              onChange={e => { setDateEnd(e.target.value); setPage(1); }}
+              InputLabelProps={{ shrink: true }}
+              sx={{ minWidth: 150, borderRadius: 2 }}
+            />
+            <TextField
+              label="Search Order ID or Recipient"
+              size="small"
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1); }}
-              className="rounded-lg border border-gray-200"
-              style={{ minWidth: 220, height: 40 }}
-              allowClear
+              InputProps={{ startAdornment: <MdSearch style={{ marginRight: 8 }} /> }}
+              sx={{ minWidth: 220, borderRadius: 2 }}
             />
             <Button
               variant="contained"
@@ -176,32 +141,87 @@ const OrderList = () => {
               Export to CSV
             </Button>
           </Box>
-          <Table
-            columns={columns}
-            dataSource={orders}
-            loading={loading}
-            pagination={false}
-            rowKey="orderId"
-            className="rounded-xl shadow-sm"
-            scroll={{ x: true }}
-            style={{ fontFamily: 'Poppins, Nunito, Lato, sans-serif', fontSize: 16 }}
-          />
+          <TableContainer component={Paper} className="rounded-xl shadow-sm">
+            <Table sx={{ minWidth: 650, fontFamily: 'Poppins, Nunito, Lato, sans-serif', fontSize: 16 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Order ID</TableCell>
+                  <TableCell>Order Date</TableCell>
+                  <TableCell>Recipient Name</TableCell>
+                  <TableCell>Destination Address</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Estimated Delivery</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      <CircularProgress size={32} />
+                    </TableCell>
+                  </TableRow>
+                ) : orders.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      No orders found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  orders.map((row) => (
+                    <TableRow key={row.orderId}>
+                      <TableCell>
+                        <Button
+                          variant="text"
+                          color="primary"
+                          sx={{ textTransform: 'none', fontWeight: 700, color: '#001BB7' }}
+                          onClick={() => toast.info(`Navigate to details for ${row.orderId}`)}
+                        >
+                          {row.orderId}
+                        </Button>
+                      </TableCell>
+                      <TableCell>{row.orderDate}</TableCell>
+                      <TableCell>{row.recipient}</TableCell>
+                      <TableCell>{row.address}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={row.status}
+                          color={statusColors[row.status] || 'default'}
+                          sx={{ borderRadius: 2, fontWeight: 600, fontSize: 14 }}
+                        />
+                      </TableCell>
+                      <TableCell>{row.estimated}</TableCell>
+                      <TableCell>
+                        <Box className="flex gap-2">
+                          <Button size="small" color="primary" variant="outlined" startIcon={<MdRemoveRedEye />} onClick={() => toast.info('View details')}>View</Button>
+                          <Button size="small" color="info" variant="outlined" startIcon={<MdTrackChanges />} onClick={() => toast.info('Track order')}>Track</Button>
+                          {row.status === 'Pending' && (
+                            <Button size="small" color="error" variant="outlined" startIcon={<MdCancel />} onClick={() => toast.warn('Cancel order (placeholder)')}>Cancel</Button>
+                          )}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
           <Box className="flex flex-col md:flex-row md:items-center justify-between mt-6 gap-4">
             <Pagination
-              current={page}
-              pageSize={pageSize}
-              total={total}
-              showSizeChanger
-              pageSizeOptions={[5, 10, 20, 50]}
-              onChange={(p, s) => { setPage(p); setPageSize(s); }}
-              className="rounded-lg"
+              count={Math.ceil(total / pageSize)}
+              page={page}
+              onChange={(e, p) => setPage(p)}
+              color="primary"
+              size="large"
+              showFirstButton
+              showLastButton
             />
             <Typography variant="body2" color="text.secondary">
               Showing {orders.length} of {total} orders
             </Typography>
           </Box>
         </Box>
-      </motion.div>
+      </Box>
     </Box>
   );
 };

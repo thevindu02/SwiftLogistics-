@@ -26,9 +26,7 @@ const COLORS = {
 
 const navLinks = [
   { label: 'Home', path: '/' },
-  { label: 'Orders', path: '/orders' },
-  { label: 'Tracking', path: '/tracking' },
-  { label: 'Support', path: '/support' },
+  { label: 'Contact Us', path: '/support' },
 ];
 
 

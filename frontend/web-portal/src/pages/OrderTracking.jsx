@@ -1,215 +1,231 @@
+// OrderTracking.jsx
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Card, CardContent, Typography, Chip, Stepper, Step, StepLabel, Switch, TextField, Grid, Divider } from '@mui/material';
-import { Timeline } from 'antd';
-import { motion } from 'framer-motion';
-import { MdSearch, MdLocationOn, MdDirectionsCar, MdPerson, MdAccessTime, MdAutorenew } from 'react-icons/md';
-import { ToastContainer, toast } from 'react-toastify';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Stepper,
+  Step,
+  StepLabel,
+  Switch,
+  FormControlLabel,
+  Grid,
+  Avatar,
+  Divider,
+} from '@mui/material';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '@fontsource/poppins/400.css';
-import '@fontsource/poppins/700.css';
-import 'antd/dist/reset.css';
 
-const sectionFade = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+const COLORS = {
+  deepBlue: '#001BB7',
+  primaryBlue: '#0046FF',
+  orange: '#FF8040',
+  lightGrey: '#E9E9E9',
 };
 
-const statusSteps = [
-  'Confirmed',
-  'Picked Up',
-  'In Transit',
-  'Out for Delivery',
-  'Delivered',
+// Remove framer-motion and fadeInVariants for simplicity
+
+const STEPS = ['Confirmed', 'Picked Up', 'In Transit', 'Out for Delivery', 'Delivered'];
+
+const DUMMY_DRIVER_INFO = {
+  name: 'Chaminda Perera',
+  avatarUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
+  vehicle: 'Toyota HiAce Van - Reg: WP GB 1234',
+  estimatedWindow: '2025-09-10, 4:00 PM - 6:00 PM',
+};
+
+const DUMMY_LIVE_UPDATES = [
+  { id: 1, message: 'Package loaded onto vehicle.', timestamp: '5 minutes ago' },
+  { id: 2, message: 'Left warehouse, heading to pickup point.', timestamp: '10 minutes ago' },
+  { id: 3, message: 'Package scanned at pickup point.', timestamp: '30 minutes ago' },
 ];
 
-const fakeTracking = {
-  orderId: 'ORD1001',
-  currentStatus: 'In Transit',
-  lastUpdate: '2025-08-29 14:30',
-  currentLocation: 'Kurunegala Hub',
-  milestones: [
-    { status: 'Confirmed', time: '2025-08-27 09:00', location: 'Colombo Hub' },
-    { status: 'Picked Up', time: '2025-08-27 12:00', location: 'Colombo Hub' },
-    { status: 'In Transit', time: '2025-08-28 10:00', location: 'Kurunegala Hub' },
-    { status: 'Out for Delivery', time: '', location: '' },
-    { status: 'Delivered', time: '', location: '' },
-  ],
-  driver: {
-    name: 'Nimal Perera',
-    phone: '0771234567',
-    vehicle: 'Toyota HiAce',
-    plate: 'WP-AB-1234',
-  },
-  estimatedWindow: '2025-08-30 10:00 - 14:00',
-  notifications: [
-    { time: '2025-08-29 14:30', message: 'Arrived at Kurunegala Hub' },
-    { time: '2025-08-28 10:00', message: 'Left Colombo Hub' },
-    { time: '2025-08-27 12:00', message: 'Package picked up by driver' },
-  ],
-};
-
-const OrderTracking = () => {
-  const [orderId, setOrderId] = useState('ORD1001');
-  const [tracking, setTracking] = useState(null);
-  const [loading, setLoading] = useState(false);
+export default function OrderTracking({ onSidebarOpen }) {
+  const [orderId, setOrderId] = useState('');
+  const [trackedOrderId, setTrackedOrderId] = useState('');
+  const [currentStep, setCurrentStep] = useState(0);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [activeStep, setActiveStep] = useState(2);
+  const [liveUpdates, setLiveUpdates] = useState(DUMMY_LIVE_UPDATES);
 
+  // Simulate WebSocket live updates on interval if autoRefresh enabled
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setTracking(fakeTracking);
-      setActiveStep(statusSteps.indexOf(fakeTracking.currentStatus));
-      setLoading(false);
-    }, 800);
-    // Placeholder for WebSocket/auto-refresh logic
-  }, [orderId, autoRefresh]);
+    if (!autoRefresh || !trackedOrderId) return;
 
+    const interval = setInterval(() => {
+      // For demo, just add dummy new update alternately
+      setLiveUpdates((updates) => {
+        const newUpdate = {
+          id: updates.length + 1,
+          message: `Update #${updates.length + 1} for order ${trackedOrderId}`,
+          timestamp: 'Just now',
+        };
+        return [newUpdate, ...updates].slice(0, 5);
+      });
+      setCurrentStep((step) => (step < STEPS.length - 1 ? step + 1 : step));
+      toast.info(`Order ${trackedOrderId} status updated.`, { autoClose: 2000, position: 'top-right' });
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, trackedOrderId]);
+
+  // Validation and Track button handler
   const handleTrack = () => {
     if (!orderId.trim()) {
-      toast.error('Please enter an Order ID');
+      toast.error('Please enter a valid Order ID.');
       return;
     }
-    setLoading(true);
-    setTimeout(() => {
-      setTracking(fakeTracking);
-      setActiveStep(statusSteps.indexOf(fakeTracking.currentStatus));
-      setLoading(false);
-      toast.success('Tracking info loaded!');
-    }, 800);
+    setTrackedOrderId(orderId.trim());
+    setCurrentStep(0);
+    setLiveUpdates(DUMMY_LIVE_UPDATES);
+    toast.success(`Tracking order ${orderId.trim()} started`, { autoClose: 3000, position: 'top-right' });
   };
 
   return (
-    <Box className="min-h-screen bg-[#E9E9E9] flex flex-col items-center py-6 px-2" style={{ fontFamily: 'Poppins, Nunito, Lato, sans-serif' }}>
-      <ToastContainer position="top-center" autoClose={2000} />
-      <motion.div initial="hidden" animate="visible" variants={sectionFade} className="w-full max-w-6xl">
-        <Typography variant="h4" className="mb-6 font-bold text-[#001BB7]" style={{ fontFamily: 'Poppins, Nunito, Lato, sans-serif', fontSize: '2.2rem' }}>
-          Track Order - #{orderId}
+    <Box className="max-w-7xl mx-auto p-6 sm:p-10 font-poppins" aria-label="Order Tracking Page">
+      {/* Header with sidebar open button */}
+      <Box display="flex" alignItems="center" mb={2}>
+        <Button onClick={onSidebarOpen} variant="outlined" sx={{ mr: 2, borderRadius: 2 }}>
+          <span style={{ fontSize: 22, marginRight: 6 }}>☰</span> Menu
+        </Button>
+        <Typography variant="h4" fontWeight="700" color={COLORS.deepBlue}>
+          Track Order{trackedOrderId && ` - #${trackedOrderId}`}
         </Typography>
-        {/* Search Section */}
-        <Box className="flex flex-col md:flex-row gap-4 mb-6 items-end">
+      </Box>
+      <Grid container spacing={2} alignItems="center" mb={4}>
+        <Grid item xs={12} sm={8} md={6}>
           <TextField
             label="Order ID"
             value={orderId}
-            onChange={e => setOrderId(e.target.value)}
+            onChange={(e) => setOrderId(e.target.value.toUpperCase())}
+            fullWidth
             variant="outlined"
-            size="medium"
-            sx={{ borderRadius: 2, minWidth: 220 }}
+            inputProps={{ 'aria-label': 'Order ID input' }}
           />
+        </Grid>
+        <Grid item xs={12} sm={4} md={2}>
           <Button
             variant="contained"
-            color="primary"
-            startIcon={<MdSearch />}
-            sx={{ background: '#0046FF', borderRadius: 2, textTransform: 'none', fontWeight: 600, minWidth: 120 }}
+            fullWidth
             onClick={handleTrack}
-            disabled={loading}
+            sx={{
+              bgcolor: COLORS.primaryBlue,
+              '&:hover': { bgcolor: '#0039bb' },
+              borderRadius: 3,
+              height: '56px',
+              fontWeight: 600,
+              textTransform: 'none',
+            }}
+            aria-label="Track Order"
           >
             Track
           </Button>
-          <Box className="flex items-center gap-2 ml-2">
-            <Switch checked={autoRefresh} onChange={e => setAutoRefresh(e.target.checked)} color="primary" />
-            <Typography variant="body2" color="text.secondary">Auto-refresh</Typography>
-            <MdAutorenew className={autoRefresh ? 'animate-spin' : ''} color="#0046FF" />
-          </Box>
-        </Box>
-        {loading || !tracking ? (
-          <Box className="flex justify-center items-center min-h-[200px]"><Typography>Loading...</Typography></Box>
-        ) : (
-          <Grid container spacing={3}>
-            {/* Left Column */}
-            <Grid item xs={12} md={6}>
-              {/* Real-time Status Card */}
-              <Card className="rounded-2xl shadow-lg mb-4">
-                <CardContent>
-                  <Typography variant="h6" color="#0046FF" gutterBottom>Current Status</Typography>
-                  <Typography variant="h4" className="font-bold mb-2">{tracking.currentStatus}</Typography>
-                  <Typography><b>Last Update:</b> {tracking.lastUpdate}</Typography>
-                  <Typography><b>Current Location:</b> {tracking.currentLocation}</Typography>
-                </CardContent>
-              </Card>
-              {/* Delivery Progress Bar */}
-              <Card className="rounded-2xl shadow-lg mb-4">
-                <CardContent>
-                  <Typography variant="h6" color="#0046FF" gutterBottom>Delivery Progress</Typography>
-                  <Stepper activeStep={activeStep} alternativeLabel>
-                    {statusSteps.map((label) => (
-                      <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
-                      </Step>
-                    ))}
-                  </Stepper>
-                </CardContent>
-              </Card>
-              {/* Status Timeline */}
-              <Card className="rounded-2xl shadow-lg mb-4">
-                <CardContent>
-                  <Typography variant="h6" color="#0046FF" gutterBottom>Status Timeline</Typography>
-                  <Timeline
-                    mode="left"
-                    items={tracking.milestones.map((item, idx) => ({
-                      color: item.status === 'Delivered' ? '#FF8040' : item.status === 'Out for Delivery' ? '#0046FF' : '#001BB7',
-                      label: item.time,
-                      children: (
-                        <Box className="flex items-center gap-2">
-                          <MdLocationOn color="#0046FF" />
-                          <span className="font-semibold">{item.status}</span>
-                          <span className="text-gray-500 text-xs">{item.location}</span>
-                        </Box>
-                      ),
-                    }))}
+        </Grid>
+      </Grid>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 4, mb: 4, borderRadius: 3, boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }} aria-label="Current order status">
+            <Typography variant="h5" fontWeight="700" color={COLORS.primaryBlue} gutterBottom>
+              Current Status: {STEPS[currentStep]}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Last update: {liveUpdates[0]?.timestamp || '-'}
+            </Typography>
+          </Paper>
+          <Paper sx={{ mb: 4, p: 3, borderRadius: 3 }}>
+            <Stepper activeStep={currentStep} alternativeLabel>
+              {STEPS.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Paper>
+          <Paper sx={{ p: 4, borderRadius: 3, mb: 4 }} aria-label="Delivery information">
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              Delivery Information
+            </Typography>
+            <Box display="flex" alignItems="center" gap={2} mb={2}>
+              <Avatar alt={DUMMY_DRIVER_INFO.name} src={DUMMY_DRIVER_INFO.avatarUrl} sx={{ width: 56, height: 56 }} />
+              <Box>
+                <Typography fontWeight={600}>{DUMMY_DRIVER_INFO.name}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Driver
+                </Typography>
+              </Box>
+            </Box>
+            <Typography>
+              <strong>Vehicle: </strong> {DUMMY_DRIVER_INFO.vehicle}
+            </Typography>
+            <Typography>
+              <strong>Estimated Delivery Window: </strong> {DUMMY_DRIVER_INFO.estimatedWindow}
+            </Typography>
+          </Paper>
+          <Paper sx={{ p: 3, borderRadius: 3 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography variant="h6" fontWeight={600}>
+                Live Updates
+              </Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={autoRefresh}
+                    onChange={() => setAutoRefresh((prev) => !prev)}
+                    color="primary"
+                    inputProps={{ 'aria-label': 'Auto-refresh toggle' }}
                   />
-                </CardContent>
-              </Card>
-              {/* Live Updates Panel */}
-              <Card className="rounded-2xl shadow-lg mb-4">
-                <CardContent>
-                  <Typography variant="h6" color="#0046FF" gutterBottom>Live Updates</Typography>
-                  <Box className="max-h-40 overflow-y-auto">
-                    {tracking.notifications.map((n, i) => (
-                      <Box key={i} className="flex items-center gap-2 mb-2">
-                        <MdAccessTime color="#001BB7" />
-                        <Typography variant="body2"><b>{n.time}:</b> {n.message}</Typography>
-                      </Box>
-                    ))}
+                }
+                label="Auto-refresh"
+              />
+            </Box>
+            <Box sx={{ maxHeight: 150, overflowY: 'auto' }} aria-live="polite">
+              {liveUpdates.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  No live updates available.
+                </Typography>
+              ) : (
+                liveUpdates.map(({ id, message, timestamp }) => (
+                  <Box key={id} sx={{ mb: 1 }}>
+                    <Typography variant="body2">{message}</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {timestamp}
+                    </Typography>
+                    <Divider sx={{ my: 1 }} />
                   </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            {/* Right Column */}
-            <Grid item xs={12} md={6}>
-              {/* Live Map Placeholder */}
-              <Card className="rounded-2xl shadow-lg mb-4">
-                <CardContent>
-                  <Typography variant="h6" color="#0046FF" gutterBottom>Live Map</Typography>
-                  <Box className="w-full h-64 bg-[#E9E9E9] flex items-center justify-center rounded-xl border border-dashed border-[#0046FF]">
-                    <Typography color="#0046FF">[Map integration placeholder]</Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-              {/* Delivery Info Card */}
-              <Card className="rounded-2xl shadow-lg mb-4">
-                <CardContent>
-                  <Typography variant="h6" color="#0046FF" gutterBottom>Delivery Info</Typography>
-                  <Box className="flex items-center gap-2 mb-2">
-                    <MdPerson color="#001BB7" />
-                    <Typography variant="body2"><b>Driver:</b> {tracking.driver.name} ({tracking.driver.phone})</Typography>
-                  </Box>
-                  <Box className="flex items-center gap-2 mb-2">
-                    <MdDirectionsCar color="#0046FF" />
-                    <Typography variant="body2"><b>Vehicle:</b> {tracking.driver.vehicle} ({tracking.driver.plate})</Typography>
-                  </Box>
-                  <Box className="flex items-center gap-2 mb-2">
-                    <MdAccessTime color="#FF8040" />
-                    <Typography variant="body2"><b>Estimated Delivery:</b> {tracking.estimatedWindow}</Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        )}
-      </motion.div>
+                ))
+              )}
+            </Box>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper
+            sx={{
+              height: { xs: 300, md: '100%' },
+              borderRadius: 3,
+              overflow: 'hidden',
+              boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+            }}
+            aria-label="Live Location Map"
+          >
+            <iframe
+              title="Live Order Location Map"
+              src="https://maps.google.com/maps?q=colombo&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              aria-describedby="map-description"
+            />
+          </Paper>
+          <Typography id="map-description" variant="caption" color="text.secondary" mt={1}>
+            Map showing live location of your order.
+          </Typography>
+        </Grid>
+      </Grid>
+      <ToastContainer position="top-right" />
     </Box>
   );
-};
+}
 
-export default OrderTracking;
