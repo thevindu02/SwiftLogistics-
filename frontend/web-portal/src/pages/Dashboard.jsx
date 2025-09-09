@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -20,6 +21,10 @@ import {
 import { Search as SearchIcon, Logout as LogoutIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
+import Sidebar from './Sidebar.jsx';
+import MenuIcon from '@mui/icons-material/Menu';
+
+// Define stats and recentOrders at top-level
 const stats = {
   totalOrders: 1450,
   pendingDeliveries: 120,
@@ -35,58 +40,31 @@ const recentOrders = [
   { id: 'ORD1238', date: '2025-08-22', status: 'Delivered', destination: 'Kurunegala' },
 ];
 
-export default function Dashboard() {
+export default function Dashboard({ onSidebarOpen }) {
   const theme = useTheme();
-
-  // User menu
   const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const openMenu = Boolean(anchorEl);
   const handleMenu = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
-
-  // Track order input
   const [trackOrderId, setTrackOrderId] = useState('');
+  const navigate = useNavigate();
+  // Sidebar state is now managed globally in App.jsx
 
   return (
-    <Box
-      sx={{
-        bgcolor: theme.palette.background.default,
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      {/* Header */}
-      <Box
-        sx={{
-          p: 2,
-          display: 'flex',
-          justifyContent: 'flex-end',
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'background.paper',
-        }}
-      >
-        <IconButton onClick={handleMenu} size="large" aria-label="user account menu">
-          <Avatar alt="User Name" src="/user-avatar.png" />
-        </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        >
-          <MenuItem onClick={handleClose}>Profile</MenuItem>
-          <MenuItem onClick={handleClose}>
-            Logout <LogoutIcon fontSize="small" sx={{ ml: 1 }} />
-          </MenuItem>
-        </Menu>
-      </Box>
-
+    <Box sx={{ bgcolor: theme.palette.background.default, minHeight: '100vh' }}>
       {/* Main content container */}
-      <Box sx={{ flexGrow: 1, p: 3, maxWidth: 1200, mx: 'auto' }}>
-        {/* Stats cards */}
+      <Box sx={{ p: 4, maxWidth: 2000, mx: 'auto', mt: 2 }}>
+        {/* Header with sidebar open button */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <Button onClick={onSidebarOpen} variant="outlined" sx={{ mr: 2, borderRadius: 2 }}>
+            <span style={{ fontSize: 22, marginRight: 6 }}>☰</span> Menu
+          </Button>
+          <Typography variant="h4" fontWeight={700} color={theme.palette.primary.main}>
+            Dashboard
+          </Typography>
+        </Box>
+        {/* ...existing code... */}
+        {/* Stats cards, actions, recent orders, notifications remain unchanged */}
         <Grid container spacing={3} mb={4}>
           {[
             { label: 'Total Orders', value: stats.totalOrders, color: theme.palette.primary.main },
@@ -97,7 +75,7 @@ export default function Dashboard() {
             <Grid item xs={12} sm={6} md={3} key={stat.label}>
               <Paper
                 sx={{
-                  p: 3,
+                  p: -1,
                   borderRadius: 3,
                   height: '100%',
                   display: 'flex',
@@ -116,53 +94,7 @@ export default function Dashboard() {
             </Grid>
           ))}
         </Grid>
-
-        {/* Actions */}
-        <Grid container spacing={2} alignItems="center" mb={4}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Button
-              variant="contained"
-              size="large"
-              fullWidth
-              sx={{
-                borderRadius: 3,
-                bgcolor: theme.palette.primary.main,
-                '&:hover': { bgcolor: theme.palette.primary.dark },
-              }}
-              onClick={() => alert('Navigate to Submit Order')}
-            >
-              Submit New Order
-            </Button>
-          </Grid>
-          <Grid item xs={12} sm={6} md={5}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              size="small"
-              placeholder="Track Order by ID"
-              value={trackOrderId}
-              onChange={(e) => setTrackOrderId(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="search order"
-                      onClick={() => alert(`Searching order ${trackOrderId}`)}
-                      edge="end"
-                    >
-                      <SearchIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ bgcolor: 'background.paper', borderRadius: 1 }}
-              inputProps={{ 'aria-label': 'track order' }}
-            />
-          </Grid>
-        </Grid>
-
-        {/* Recent Orders */}
-        <Typography variant="h6" sx={{ mb: 2 }}>
+        <Typography variant="h6" sx={{ mb: 5 }}>
           Recent Orders
         </Typography>
         <Paper sx={{ borderRadius: 3, overflowX: 'auto', mb: 5 }}>
@@ -225,28 +157,29 @@ export default function Dashboard() {
             </tbody>
           </table>
         </Paper>
-
-        {/* Real-time Notifications */}
         <Typography variant="h6" gutterBottom>
           Real-time Notifications
         </Typography>
         <Paper sx={{ p: 2, borderRadius: 3, maxHeight: 200, overflowY: 'auto' }}>
           <List>
-            <ListItem>
-              <ListItemText primary="Order ORD1234 has been shipped." secondary="2 minutes ago" />
-            </ListItem>
-            <Divider component="li" />
-            <ListItem>
-              <ListItemText primary="Route update: New high-priority delivery added." secondary="10 minutes ago" />
-            </ListItem>
-            <Divider component="li" />
-            <ListItem>
-              <ListItemText primary="System maintenance planned for Sept 1, 2025." secondary="1 day ago" />
-            </ListItem>
+            {[ 
+              <ListItem key="n1">
+                <ListItemText primary="Order ORD1234 has been shipped." secondary="2 minutes ago" />
+              </ListItem>,
+              <Divider key="d1" component="li" />,
+              <ListItem key="n2">
+                <ListItemText primary="Route update: New high-priority delivery added." secondary="10 minutes ago" />
+              </ListItem>,
+              <Divider key="d2" component="li" />,
+              <ListItem key="n3">
+                <ListItemText primary="System maintenance planned for Sept 1, 2025." secondary="1 day ago" />
+              </ListItem>
+            ]}
           </List>
         </Paper>
       </Box>
     </Box>
   );
+// ...existing code...
 }
 

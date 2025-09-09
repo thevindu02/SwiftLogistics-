@@ -10,10 +10,7 @@ const COLORS = {
 };
 
 const navLinks = [
-  { label: 'Home', href: '#' },
-  { label: 'Orders', href: '#' },
-  { label: 'Tracking', href: '#' },
-  { label: 'Support', href: '#' },
+  { label: 'Contact Us', href: '#' },
 ];
 
 
@@ -52,19 +49,19 @@ export default function Footer() {
                 mb: 1,
                 cursor: 'default',
                 userSelect: 'none',
-                '& span': { color: COLORS.orange },
                 fontSize: { xs: '1.5rem', md: '1.75rem' },
                 textAlign: { xs: 'center', md: 'left' },
               }}
             >
-              <span>Swift</span>Track
+              <span style={{ color: COLORS.orange }}>Swift</span>
+              <span style={{ color: '#fff' }}>Logistics</span>
             </Typography>
             <Typography variant="body2" sx={{ maxWidth: 300, color: COLORS.lightGrey, mx: { xs: 'auto', md: 0 }, textAlign: { xs: 'center', md: 'left' } }}>
               Reliable last-mile delivery with transparent tracking.
             </Typography>
           </Grid>
 
-          {/* Center: Navigation Links */}
+          {/* Center: Navigation Links + Address */}
           <Grid item xs={12} md={4} sx={{ textAlign: 'center', mt: { xs: 2, md: 0 } }}>
             <Box display="flex" justifyContent="center" gap={3} flexWrap="wrap">
               {navLinks.map(({ label, href }) => (
@@ -84,6 +81,9 @@ export default function Footer() {
                 </Link>
               ))}
             </Box>
+            <Typography variant="body2" sx={{ mt: 2, color: COLORS.lightGrey, fontFamily: "'Poppins', sans-serif" }}>
+              123 Main Street, Colombo, Sri Lanka
+            </Typography>
           </Grid>
 
           {/* Right: Social Media */}

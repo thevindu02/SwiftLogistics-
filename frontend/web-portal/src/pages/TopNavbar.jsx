@@ -26,9 +26,7 @@ const COLORS = {
 
 const navLinks = [
   { label: 'Home', path: '/' },
-  { label: 'Orders', path: '/orders' },
-  { label: 'Tracking', path: '/tracking' },
-  { label: 'Support', path: '/support' },
+  { label: 'Contact Us', path: '/support' },
 ];
 
 
@@ -59,14 +57,14 @@ export default function TopNavbar() {
       sx={{
         fontWeight: 700,
         fontFamily: "'Poppins', sans-serif",
-        color: COLORS.blue,
         userSelect: 'none',
         cursor: 'pointer',
-        '& span': { color: COLORS.orange },
+        color: 'inherit',
       }}
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
     >
-      <span>Swift</span>Track
+      <span style={{ color: COLORS.orange }}>Swift</span>
+      <span style={{ color: COLORS.blue }}>Logistics</span>
     </Typography>
   );
 
@@ -131,14 +129,12 @@ export default function TopNavbar() {
     <>
       <AppBar
         position="fixed"
-        elevation={navBackground === 'transparent' ? 0 : 4}
+        elevation={0}
         sx={{
-          bgcolor: navBackground,
-          transition: 'background-color 0.3s ease',
+          bgcolor: '#fff',
           px: 3,
           py: 1,
-          borderBottomLeftRadius: navBackground === 'transparent' ? 0 : 8,
-          borderBottomRightRadius: navBackground === 'transparent' ? 0 : 8,
+          boxShadow: '0 2px 8px rgba(0,27,183,0.08)',
         }}
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -150,15 +146,16 @@ export default function TopNavbar() {
                   key={label}
                   onClick={() => navigate(path)}
                   sx={{
-                    color: '#fff',
+                    color: COLORS.blue,
                     fontWeight: 600,
                     fontFamily: "'Poppins', sans-serif",
                     fontSize: '1rem',
                     borderRadius: 2,
                     textTransform: 'none',
+                    bgcolor: 'transparent',
                     '&:hover': {
-                      bgcolor: COLORS.blue,
-                      color: '#fff',
+                      bgcolor: COLORS.lightGrey,
+                      color: COLORS.darkBlue,
                     },
                   }}
                 >
@@ -187,6 +184,7 @@ export default function TopNavbar() {
                   bgcolor: COLORS.blue,
                   color: '#fff',
                   boxShadow: '0 2px 8px rgba(0,70,255,0.08)',
+                  border: 'none',
                   '&:hover': {
                     bgcolor: COLORS.darkBlue,
                     color: '#fff',
