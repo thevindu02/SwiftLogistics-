@@ -29,11 +29,11 @@ const fakeOrderDetails = {
   packagePhoto: '',
   recipient: 'John Doe',
   phone: '0712345678',
-  address: '123 Main St, Colombo',
+  address: '123 Main St, Colombo, Sri Lanka',
   deliveryInstructions: 'Leave at reception',
   timeline: [
-    { status: 'Pending', time: '2025-08-25 09:00', location: 'Colombo Hub', icon: <MdPending color="#001BB7" /> },
-    { status: 'In Transit', time: '2025-08-26 14:30', location: 'Galle Hub', icon: <MdLocalShipping color="#0046FF" /> },
+    { status: 'Pending', time: '2025-08-25 09:00', location: 'Colombo Hub, Sri Lanka', icon: <MdPending color="#001BB7" /> },
+    { status: 'In Transit', time: '2025-08-26 14:30', location: 'Galle Hub, Sri Lanka', icon: <MdLocalShipping color="#0046FF" /> },
     { status: 'Delivered', time: '', location: '', icon: <MdCheckCircle color="#FF8040" /> },
   ],
   actions: [
