@@ -33,10 +33,10 @@ const fadeInVariants = {
 };
 
 const dummyAddressOptions = [
-  { value: '123 Main Street, Colombo' },
-  { value: '456 Lake Road, Kandy' },
-  { value: '789 Ocean Drive, Galle' },
-  { value: '10 Beach Avenue, Negombo' },
+  { value: '123 Main Street, Colombo, Sri Lanka' },
+  { value: '456 Lake Road, Kandy, Sri Lanka' },
+  { value: '789 Ocean Drive, Galle, Sri Lanka' },
+  { value: '10 Beach Avenue, Negombo, Sri Lanka' },
 ];
 
 export default function SubmitOrder({ onSidebarOpen }) {
