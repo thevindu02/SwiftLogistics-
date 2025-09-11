@@ -210,7 +210,7 @@ export default function OrderTracking({ onSidebarOpen }) {
           >
             <iframe
               title="Live Order Location Map"
-              src="https://maps.google.com/maps?q=colombo&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              src="https://maps.google.com/maps?q=colombo+sri+lanka&t=&z=13&ie=UTF8&iwloc=&output=embed"
               width="100%"
               height="100%"
               style={{ border: 0 }}
