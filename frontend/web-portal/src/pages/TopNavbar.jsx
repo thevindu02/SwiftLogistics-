@@ -1,5 +1,5 @@
 // TopNavbar.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -25,26 +25,21 @@ const COLORS = {
 };
 
 const navLinks = [
-  { label: 'Home', path: '/' },
-  { label: 'Contact Us', path: '/support' },
+  { label: 'About Us', path: '/about' },
+  { label: 'Exports', path: '/exports' },
+  { label: 'Sea Freight', path: '/sea-freight' },
+  { label: 'Imports', path: '/imports' },
+  { label: 'Support', path: '/support' },
+  { label: 'Contact Us', path: '/contact' },
 ];
 
 
-export default function TopNavbar() {
+export default function TopNavbar({ onSidebarOpen }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [navBackground, setNavBackground] = useState('transparent');
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setNavBackground(window.scrollY > 50 ? COLORS.darkBlue : 'transparent');
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const toggleDrawer = open => event => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
@@ -61,10 +56,10 @@ export default function TopNavbar() {
         cursor: 'pointer',
         color: 'inherit',
       }}
-      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      onClick={() => navigate('/')}
     >
       <span style={{ color: COLORS.orange }}>Swift</span>
-      <span style={{ color: COLORS.blue }}>Logistics</span>
+      <span style={{ color: '#fff' }}>Logistics</span>
     </Typography>
   );
 
@@ -89,6 +84,17 @@ export default function TopNavbar() {
             />
           </ListItemButton>
         ))}
+        <ListItemButton onClick={() => navigate('/tracking')} sx={{ borderRadius: 1, mb: 1 }}>
+          <ListItemText
+            primary="Track Shipment"
+            primaryTypographyProps={{
+              fontFamily: "'Poppins', sans-serif",
+              fontWeight: 600,
+              fontSize: '1.1rem',
+              color: COLORS.blue,
+            }}
+          />
+        </ListItemButton>
         <Box sx={{ mt: 2, px: 2 }}>
           <Button
             variant="outlined"
@@ -131,22 +137,63 @@ export default function TopNavbar() {
         position="fixed"
         elevation={0}
         sx={{
-          bgcolor: '#fff',
+          bgcolor: '#1e3a5f',
           px: 3,
           py: 1,
-          boxShadow: '0 2px 8px rgba(0,27,183,0.08)',
+          boxShadow: '0 4px 20px rgba(30, 58, 95, 0.15)',
         }}
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Logo />
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {/* Menu Button */}
+            {onSidebarOpen && (
+              <Button 
+                onClick={onSidebarOpen} 
+                variant="outlined" 
+                sx={{ 
+                  mr: 3, 
+                  borderRadius: 2,
+                  color: '#fff',
+                  borderColor: COLORS.orange,
+                  '&:hover': {
+                    bgcolor: COLORS.orange,
+                    borderColor: COLORS.orange,
+                    color: '#fff',
+                  }
+                }}
+              >
+                <span style={{ fontSize: 18, marginRight: 8 }}>☰</span> MENU
+              </Button>
+            )}
+            
+            {/* Company Logo */}
+            <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
+              <Box 
+                sx={{ 
+                  width: 40, 
+                  height: 40, 
+                  borderRadius: '50%', 
+                  bgcolor: COLORS.orange, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  mr: 2
+                }}
+              >
+                <Typography sx={{ color: 'white', fontSize: '20px', fontWeight: 'bold' }}>🚚</Typography>
+              </Box>
+              <Logo />
+            </Box>
+          </Box>
+
           {!isMobile && (
-            <Box sx={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
               {navLinks.map(({ label, path }) => (
                 <Button
                   key={label}
                   onClick={() => navigate(path)}
                   sx={{
-                    color: COLORS.blue,
+                    color: '#fff',
                     fontWeight: 600,
                     fontFamily: "'Poppins', sans-serif",
                     fontSize: '1rem',
@@ -154,19 +201,44 @@ export default function TopNavbar() {
                     textTransform: 'none',
                     bgcolor: 'transparent',
                     '&:hover': {
-                      bgcolor: COLORS.lightGrey,
-                      color: COLORS.darkBlue,
+                      bgcolor: 'rgba(255, 128, 64, 0.1)',
+                      color: COLORS.orange,
                     },
                   }}
                 >
                   {label}
                 </Button>
               ))}
+              
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: '20px',
+                  fontWeight: 600,
+                  textTransform: 'none',
+                  bgcolor: COLORS.orange,
+                  color: '#fff',
+                  boxShadow: '0 2px 8px rgba(255, 128, 64, 0.3)',
+                  '&:hover': {
+                    bgcolor: '#e6703a',
+                  },
+                }}
+                onClick={() => navigate('/tracking')}
+              >
+                Track Shipment
+              </Button>
             </Box>
           )}
+          
           {isMobile ? (
             <>
-              <IconButton edge="end" color="inherit" aria-label="menu" onClick={toggleDrawer(true)} size="large">
+              <IconButton 
+                edge="end" 
+                aria-label="menu" 
+                onClick={toggleDrawer(true)} 
+                size="large"
+                sx={{ color: '#fff' }}
+              >
                 <MenuIcon />
               </IconButton>
               <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
@@ -176,17 +248,16 @@ export default function TopNavbar() {
           ) : (
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Button
-                variant="contained"
+                variant="outlined"
                 sx={{
                   borderRadius: '20px',
                   fontWeight: 600,
                   textTransform: 'none',
-                  bgcolor: COLORS.blue,
+                  borderColor: '#fff',
                   color: '#fff',
-                  boxShadow: '0 2px 8px rgba(0,70,255,0.08)',
-                  border: 'none',
                   '&:hover': {
-                    bgcolor: COLORS.darkBlue,
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    borderColor: '#fff',
                     color: '#fff',
                   },
                 }}
@@ -200,11 +271,11 @@ export default function TopNavbar() {
                   borderRadius: '20px',
                   fontWeight: 600,
                   textTransform: 'none',
-                  bgcolor: COLORS.blue,
+                  bgcolor: COLORS.orange,
                   color: '#fff',
-                  boxShadow: '0 2px 8px rgba(0,70,255,0.08)',
+                  boxShadow: '0 2px 8px rgba(255, 128, 64, 0.3)',
                   '&:hover': {
-                    bgcolor: COLORS.darkBlue,
+                    bgcolor: '#e6703a',
                     color: '#fff',
                   },
                 }}
