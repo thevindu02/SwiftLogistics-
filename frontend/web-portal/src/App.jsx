@@ -18,20 +18,20 @@ function App() {
   const handleSidebarOpen = () => setSidebarOpen(true);
   const handleSidebarClose = () => setSidebarOpen(false);
 
-  // Only show Sidebar on main app pages (not Home, Login, Register)
-  const showSidebar = window.location.pathname !== '/' && window.location.pathname !== '/login' && window.location.pathname !== '/register';
+  // Only show Sidebar on main app pages (not Login, Register)
+  const showSidebar = window.location.pathname !== '/login' && window.location.pathname !== '/register';
 
   return (
     <BrowserRouter>
-      <TopNavbar />
+      <TopNavbar onSidebarOpen={handleSidebarOpen} />
       {showSidebar && (
         <Sidebar open={sidebarOpen} onClose={handleSidebarClose} />
       )}
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard onSidebarOpen={handleSidebarOpen} />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/submit-order" element={<SubmitOrder onSidebarOpen={handleSidebarOpen} />} />
         <Route path="/tracking" element={<OrderTracking onSidebarOpen={handleSidebarOpen} />} />
         <Route path="/order-list" element={<OrderList onSidebarOpen={handleSidebarOpen} />} />
