@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import TopNavbar from './TopNavBarAfter';
 import {
   Box,
   Typography,
@@ -46,7 +47,9 @@ export default function Dashboard() {
   };
 
   return (
-    <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh' }}>
+    <>
+      <TopNavbar />
+      <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh' }}>
       {/* Hero Section */}
       <Box
         sx={{
@@ -661,5 +664,6 @@ export default function Dashboard() {
         </Box>
       </Box>
     </Box>
+    </>
   );
 }

@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Checkbox, FormControlLabel, TextField, Typography, Alert, CircularProgress } from '@mui/material';
-import { motion } from 'framer-motion';
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+  Typography,
+  Alert,
+  CircularProgress,
+} from '@mui/material';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { loginApi } from '../services/authenticate';
 
 const COLORS = {
   darkBlue: '#001BB7',
@@ -18,12 +27,12 @@ export default function Login() {
   const [error, setError] = useState('');
   const [form, setForm] = useState({ username: '', password: '', remember: false });
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -35,15 +44,21 @@ export default function Login() {
     }
 
     try {
-      await new Promise(res => setTimeout(res, 1000));
+      // Call backend login API
+      const response = await loginApi(form.username, form.password);
+      const token = response.data.token;
+
+      // Store token
       if (form.remember) {
-        localStorage.setItem('token', 'demo-jwt-token');
+        localStorage.setItem('accessToken', token);
       } else {
-        sessionStorage.setItem('token', 'demo-jwt-token');
+        sessionStorage.setItem('accessToken', token);
       }
+
       navigate('/dashboard');
     } catch (err) {
-      setError('Authentication failed.');
+      console.error(err);
+      setError(err.response?.data?.message || 'Authentication failed.');
     } finally {
       setLoading(false);
     }
@@ -75,23 +90,25 @@ export default function Login() {
         }}
       >
         <Box sx={{ textAlign: 'center', px: 6 }}>
-          {/* SwiftLogistics logo */}
           <Typography variant="h4" fontWeight={700} sx={{ mb: 5 }}>
             <span style={{ color: COLORS.orange }}>Swift</span>
-            <span style={{ color: COLORS.white }}>Logistics</span>
+            <span style={{ color: '#fff' }}>Logistics</span>
           </Typography>
           <Typography variant="h3" fontWeight={700} mb={2}>
             Welcome back!
           </Typography>
           <Typography variant="h6" fontWeight={400} mb={2}>
-            You can sign in to access with your existing account.
+            You can sign in to access your account.
           </Typography>
-          {/* Abstract shapes (simple SVGs for demo) */}
           <Box sx={{ position: 'absolute', top: 40, left: 40, opacity: 0.15 }}>
-            <svg width="80" height="80"><circle cx="40" cy="40" r="30" fill={COLORS.orange} /></svg>
+            <svg width="80" height="80">
+              <circle cx="40" cy="40" r="30" fill={COLORS.orange} />
+            </svg>
           </Box>
           <Box sx={{ position: 'absolute', bottom: 60, right: 60, opacity: 0.12 }}>
-            <svg width="100" height="60"><rect x="10" y="10" width="80" height="40" rx="20" fill="#fff" /></svg>
+            <svg width="100" height="60">
+              <rect x="10" y="10" width="80" height="40" rx="20" fill="#fff" />
+            </svg>
           </Box>
         </Box>
       </Box>

@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
+import { logout } from '../services/authenticate';
 
 const COLORS = {
   darkBlue: '#001BB7',
@@ -27,7 +28,7 @@ const COLORS = {
 const navLinks = [
   { label: 'About Us', path: '/' },
   { label: 'Products', path: '/products' },
-  { label: 'Orders', path: '/imports' },
+  { label: 'Orders', path: '/orders' },
   { label: 'Contact Us', path: '/contact' },
 ];
 
@@ -60,6 +61,11 @@ export default function TopNavbar({ onSidebarOpen }) {
       <span style={{ color: '#fff' }}>Logistics</span>
     </Typography>
   );
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const drawerList = (
     <Box
@@ -111,18 +117,9 @@ export default function TopNavbar({ onSidebarOpen }) {
                 color: '#fff',
               },
             }}
-            onClick={() => navigate('/login')}
+            onClick={handleLogout}
           >
-            Login
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ borderRadius: '20px', fontWeight: '600', textTransform: 'none' }}
-            onClick={() => navigate('/register')}
-          >
-            Register
+            Logout
           </Button>
         </Box>
       </List>
@@ -259,27 +256,9 @@ export default function TopNavbar({ onSidebarOpen }) {
                     color: '#fff',
                   },
                 }}
-                onClick={() => navigate('/login')}
+                onClick={handleLogout}
               >
-                Login
-              </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  borderRadius: '20px',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  bgcolor: COLORS.orange,
-                  color: '#fff',
-                  boxShadow: '0 2px 8px rgba(255, 128, 64, 0.3)',
-                  '&:hover': {
-                    bgcolor: '#e6703a',
-                    color: '#fff',
-                  },
-                }}
-                onClick={() => navigate('/register')} 
-              >
-                Register
+                Logout
               </Button>
             </Box>
           )}
