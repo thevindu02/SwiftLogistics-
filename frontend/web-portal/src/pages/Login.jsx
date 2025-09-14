@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Checkbox, FormControlLabel, TextField, Typography, Alert, CircularProgress } from '@mui/material';
-import { motion } from 'framer-motion';
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+  Typography,
+  Alert,
+  CircularProgress,
+} from '@mui/material';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { loginApi } from '../services/authenticate';
 
 const COLORS = {
   darkBlue: '#001BB7',
@@ -18,17 +27,16 @@ export default function Login() {
   const [error, setError] = useState('');
   const [form, setForm] = useState({ username: '', password: '', remember: false });
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    // Basic validation
     if (!form.username || !form.password) {
       setError('Please enter both username and password.');
       setLoading(false);
@@ -36,20 +44,21 @@ export default function Login() {
     }
 
     try {
-      // Simulate API call
-      await new Promise(res => setTimeout(res, 1000));
+      // Call backend login API
+      const response = await loginApi(form.username, form.password);
+      const token = response.data.token;
 
-      // Store token (replace with real API response)
+      // Store token
       if (form.remember) {
-        localStorage.setItem('token', 'demo-jwt-token');
+        localStorage.setItem('accessToken', token);
       } else {
-        sessionStorage.setItem('token', 'demo-jwt-token');
+        sessionStorage.setItem('accessToken', token);
       }
 
-      // Navigate to dashboard immediately
       navigate('/dashboard');
     } catch (err) {
-      setError('Authentication failed.');
+      console.error(err);
+      setError(err.response?.data?.message || 'Authentication failed.');
     } finally {
       setLoading(false);
     }
@@ -61,45 +70,72 @@ export default function Login() {
         minHeight: '100vh',
         bgcolor: COLORS.lightGrey,
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flexDirection: { xs: 'column', md: 'row' },
         fontFamily: 'Poppins, Nunito, sans-serif',
       }}
     >
-      {/* Header */}
-      <Box sx={{ mb: 4, textAlign: 'center' }}>
-        <Typography variant="h4" fontWeight={700} color={COLORS.blue}>
-          <span style={{ color: COLORS.orange }}>Swift</span>Logistics
-        </Typography>
-        <Typography variant="subtitle1" color={COLORS.darkBlue} fontWeight={500}>
-          Client Portal
-        </Typography>
+      {/* Left Panel */}
+      <Box
+        sx={{
+          flex: 1,
+          display: { xs: 'none', md: 'flex' },
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: `linear-gradient(135deg, ${COLORS.blue} 0%, ${COLORS.darkBlue} 100%)`,
+          color: '#fff',
+          borderTopLeftRadius: 32,
+          borderBottomLeftRadius: 32,
+          position: 'relative',
+          minHeight: '100vh',
+        }}
+      >
+        <Box sx={{ textAlign: 'center', px: 6 }}>
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 5 }}>
+            <span style={{ color: COLORS.orange }}>Swift</span>
+            <span style={{ color: '#fff' }}>Logistics</span>
+          </Typography>
+          <Typography variant="h3" fontWeight={700} mb={2}>
+            Welcome back!
+          </Typography>
+          <Typography variant="h6" fontWeight={400} mb={2}>
+            You can sign in to access your account.
+          </Typography>
+          <Box sx={{ position: 'absolute', top: 40, left: 40, opacity: 0.15 }}>
+            <svg width="80" height="80">
+              <circle cx="40" cy="40" r="30" fill={COLORS.orange} />
+            </svg>
+          </Box>
+          <Box sx={{ position: 'absolute', bottom: 60, right: 60, opacity: 0.12 }}>
+            <svg width="100" height="60">
+              <rect x="10" y="10" width="80" height="40" rx="20" fill="#fff" />
+            </svg>
+          </Box>
+        </Box>
       </Box>
 
-      {/* Form Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        style={{ width: '100%', maxWidth: 380 }}
+      {/* Right Panel (Form) */}
+      <Box
+        sx={{
+          flex: 1,
+          minWidth: 350,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: '#fff',
+          borderTopRightRadius: 32,
+          borderBottomRightRadius: 32,
+          boxShadow: { md: '0 4px 24px rgba(0,27,183,0.08)' },
+          py: { xs: 6, md: 0 },
+        }}
       >
-        <Box
-          sx={{
-            bgcolor: '#fff',
-            borderRadius: 4,
-            boxShadow: '0 4px 24px rgba(0,27,183,0.08)',
-            p: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-          }}
-        >
-          {error && <Alert severity="error">{error}</Alert>}
-
+        <Box sx={{ width: '100%', maxWidth: 380, px: 2 }}>
+          <Typography variant="h4" fontWeight={700} color={COLORS.darkBlue} mb={3}>
+            Sign In
+          </Typography>
+          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
           <form onSubmit={handleSubmit} autoComplete="off">
             <TextField
-              label="Email or Username"
+              label="Username or email"
               name="username"
               value={form.username}
               onChange={handleChange}
@@ -107,8 +143,8 @@ export default function Login() {
               required
               variant="outlined"
               sx={{ mb: 2, borderRadius: 2 }}
+              InputProps={{ style: { fontSize: '1.1rem' } }}
             />
-
             <Box sx={{ position: 'relative', mb: 2 }}>
               <TextField
                 label="Password"
@@ -120,73 +156,60 @@ export default function Login() {
                 required
                 variant="outlined"
                 sx={{ borderRadius: 2 }}
+                InputProps={{ style: { fontSize: '1.1rem' } }}
               />
               <Box
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  right: 12,
-                  transform: 'translateY(-50%)',
-                  cursor: 'pointer',
-                  color: COLORS.blue,
-                }}
+                sx={{ position: 'absolute', top: '50%', right: 12, transform: 'translateY(-50%)', cursor: 'pointer', color: COLORS.blue }}
                 onClick={() => setShowPassword(v => !v)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </Box>
             </Box>
-
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="remember"
-                  checked={form.remember}
-                  onChange={handleChange}
-                  sx={{ color: COLORS.darkBlue }}
-                />
-              }
-              label={<Typography fontSize={14} color={COLORS.darkBlue}>Remember Me</Typography>}
-              sx={{ mb: 2 }}
-            />
-
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <FormControlLabel
+                control={<Checkbox name="remember" checked={form.remember} onChange={handleChange} sx={{ color: COLORS.darkBlue }} />}
+                label={<Typography fontSize={14} color={COLORS.darkBlue}>Remember me</Typography>}
+              />
+              <Button sx={{ color: COLORS.blue, textTransform: 'none', fontSize: 14 }} href="#">
+                Forgot password?
+              </Button>
+            </Box>
             <Button
               type="submit"
               variant="contained"
               fullWidth
               disabled={loading}
               sx={{
-                bgcolor: COLORS.blue,
+                background: `linear-gradient(90deg, ${COLORS.darkBlue} 0%, ${COLORS.blue} 100%)`,
                 color: '#fff',
                 borderRadius: '20px',
                 fontWeight: 600,
                 textTransform: 'none',
-                boxShadow: '0 2px 8px rgba(0,70,255,0.08)',
                 fontSize: '1.1rem',
                 py: 1.2,
+                boxShadow: '0 2px 8px rgba(0,70,255,0.08)',
                 transition: 'all 0.2s',
                 '&:hover': {
-                  bgcolor: COLORS.darkBlue,
+                  background: `linear-gradient(90deg, ${COLORS.blue} 0%, ${COLORS.darkBlue} 100%)`,
                   transform: 'scale(1.04)',
                 },
               }}
               endIcon={loading ? <CircularProgress size={22} sx={{ color: '#fff' }} /> : null}
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-
-          {/* Footer Links */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-            <Button href="#" sx={{ color: COLORS.blue, textTransform: 'none', fontSize: 14 }}>
-              Forgot Password?
-            </Button>
-            <Button href="#" sx={{ color: COLORS.orange, textTransform: 'none', fontSize: 14 }}>
-              Contact Support
-            </Button>
+          <Box sx={{ textAlign: 'center', mt: 3 }}>
+            <Typography fontSize={15} color={COLORS.darkBlue}>
+              New here?{' '}
+              <Button sx={{ color: COLORS.orange, textTransform: 'none', fontSize: 15, p: 0 }} onClick={() => navigate('/register')}>
+                Create an Account
+              </Button>
+            </Typography>
           </Box>
         </Box>
-      </motion.div>
+      </Box>
     </Box>
   );
 }

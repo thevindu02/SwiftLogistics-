@@ -14,6 +14,7 @@ function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+
 export default function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -61,11 +62,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      // Simulate API call
       await new Promise(res => setTimeout(res, 1500));
-      // Replace with real API call
-      // const res = await fetch('/api/register', ...)
-      // if (res.ok) { ... }
       setSuccess('Registration successful! Redirecting to login...');
       setTimeout(() => {
         navigate('/login');
@@ -83,41 +80,68 @@ export default function Register() {
         minHeight: '100vh',
         bgcolor: COLORS.lightGrey,
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flexDirection: { xs: 'column', md: 'row' },
         fontFamily: 'Poppins, Nunito, sans-serif',
       }}
     >
-      {/* Header */}
-      <Box sx={{ mb: 4, textAlign: 'center' }}>
-        <Typography variant="h4" fontWeight={700} color={COLORS.blue}>
-          <span style={{ color: COLORS.orange }}>Swift</span>Logistics
-        </Typography>
-        <Typography variant="subtitle1" color={COLORS.darkBlue} fontWeight={500}>
-          Create an Account
-        </Typography>
-      </Box>
-      {/* Form Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        style={{ width: '100%', maxWidth: 400 }}
+      {/* Left Panel */}
+      <Box
+        sx={{
+          flex: 1,
+          display: { xs: 'none', md: 'flex' },
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: `linear-gradient(135deg, ${COLORS.blue} 0%, ${COLORS.darkBlue} 100%)`,
+          color: '#fff',
+          borderTopLeftRadius: 32,
+          borderBottomLeftRadius: 32,
+          position: 'relative',
+          minHeight: '100vh',
+        }}
       >
-        <Box
-          sx={{
-            bgcolor: '#fff',
-            borderRadius: 4,
-            boxShadow: '0 4px 24px rgba(0,27,183,0.08)',
-            p: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-          }}
-        >
-          {error && <Alert severity="error">{error}</Alert>}
-          {success && <Alert severity="success">{success}</Alert>}
+        <Box sx={{ textAlign: 'center', px: 6 }}>
+          {/* SwiftLogistics logo */}
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 5 }}>
+            <span style={{ color: COLORS.orange }}>Swift</span>
+            <span style={{ color: COLORS.white }}>Logistics</span>
+          </Typography>
+          <Typography variant="h3" fontWeight={700} mb={2}>
+            Create your account
+          </Typography>
+          <Typography variant="h6" fontWeight={400} mb={2}>
+            Register to access the client portal and manage your logistics.
+          </Typography>
+          {/* Abstract shapes (simple SVGs for demo) */}
+          <Box sx={{ position: 'absolute', top: 40, left: 40, opacity: 0.15 }}>
+            <svg width="80" height="80"><circle cx="40" cy="40" r="30" fill={COLORS.orange} /></svg>
+          </Box>
+          <Box sx={{ position: 'absolute', bottom: 60, right: 60, opacity: 0.12 }}>
+            <svg width="100" height="60"><rect x="10" y="10" width="80" height="40" rx="20" fill="#fff" /></svg>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Right Panel (Form) */}
+      <Box
+        sx={{
+          flex: 1,
+          minWidth: 350,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: '#fff',
+          borderTopRightRadius: 32,
+          borderBottomRightRadius: 32,
+          boxShadow: { md: '0 4px 24px rgba(0,27,183,0.08)' },
+          py: { xs: 6, md: 0 },
+        }}
+      >
+        <Box sx={{ width: '100%', maxWidth: 400, px: 2 }}>
+          <Typography variant="h4" fontWeight={700} color={COLORS.darkBlue} mb={3}>
+            Register
+          </Typography>
+          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
           <form onSubmit={handleSubmit} autoComplete="off">
             <TextField
               label="Full Name"
@@ -194,17 +218,17 @@ export default function Register() {
               fullWidth
               disabled={loading}
               sx={{
-                bgcolor: COLORS.blue,
+                background: `linear-gradient(90deg, ${COLORS.darkBlue} 0%, ${COLORS.blue} 100%)`,
                 color: '#fff',
                 borderRadius: '20px',
                 fontWeight: 600,
                 textTransform: 'none',
-                boxShadow: '0 2px 8px rgba(0,70,255,0.08)',
                 fontSize: '1.1rem',
                 py: 1.2,
+                boxShadow: '0 2px 8px rgba(0,70,255,0.08)',
                 transition: 'all 0.2s',
                 '&:hover': {
-                  bgcolor: COLORS.darkBlue,
+                  background: `linear-gradient(90deg, ${COLORS.blue} 0%, ${COLORS.darkBlue} 100%)`,
                   transform: 'scale(1.04)',
                 },
               }}
@@ -213,19 +237,16 @@ export default function Register() {
               {loading ? 'Registering...' : 'Register'}
             </Button>
           </form>
-          {/* Footer Links */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-            <Link
-              component="button"
-              variant="body2"
-              onClick={() => navigate('/login')}
-              sx={{ color: COLORS.blue, textTransform: 'none', fontSize: 14 }}
-            >
-              Already have an account? Login here
-            </Link>
+          <Box sx={{ textAlign: 'center', mt: 3 }}>
+            <Typography fontSize={15} color={COLORS.darkBlue}>
+              Already have an account?{' '}
+              <Button sx={{ color: COLORS.blue, textTransform: 'none', fontSize: 15, p: 0 }} onClick={() => navigate('/login')}>
+                Login here
+              </Button>
+            </Typography>
           </Box>
         </Box>
-      </motion.div>
+      </Box>
     </Box>
   );
 }
