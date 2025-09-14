@@ -12,6 +12,8 @@ import OrderTracking from './pages/OrderTracking.jsx';
 import OrderList from './pages/OrderList.jsx';
 import Sidebar from './pages/Sidebar.jsx';
 import Profile from './pages/Profile.jsx';
+import ProductsPage from './pages/ProductPage.jsx';
+import OrderPage from './pages/OrderPage.jsx';
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -36,6 +38,8 @@ function App() {
         <Route path="/tracking" element={<OrderTracking onSidebarOpen={handleSidebarOpen} />} />
         <Route path="/order-list" element={<OrderList onSidebarOpen={handleSidebarOpen} />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/orders" element={<OrderPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>
